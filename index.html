@@ -81,12 +81,28 @@
       >
         Agregar tarea
       </button>
-      <button
-        id="deleteAllBtn"
-        class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
-      >
-        Eliminar todo
-      </button>
+      <div class="w-full flex items-center flex-row space-x-3 mb-4">
+        <button
+          id="deleteAllBtn"
+          class="w-auto bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
+        >
+          Eliminar todo
+        </button>
+
+        <button
+          id="exportBtn"
+          class="w-auto bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+        >
+          Exportar
+        </button>
+
+        <label
+          class="w-auto text-center bg-gray-200 px-4 py-2 rounded-lg cursor-pointer hover:bg-gray-300 transition"
+        >
+          Importar
+          <input type="file" id="importInput" accept=".json" class="hidden" />
+        </label>
+      </div>
     </form>
 
     <!-- Lista de tareas -->

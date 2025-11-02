@@ -137,5 +137,73 @@ function closeEditModal() {
   taskToEdit = null;
 }
 
+// === Exportar tareas ===
+const exportBtn = document.getElementById("exportBtn");
+const importInput = document.getElementById("importInput");
+
+// === Importar tareas ===
+importInput.addEventListener("change", (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const importedTasks = JSON.parse(e.target.result);
+
+      if (!Array.isArray(importedTasks)) {
+        alert("El archivo no contiene un formato válido.");
+        return;
+      }
+
+      // Confirmación antes de sobrescribir
+      if (
+        confirm("¿Quieres reemplazar tus tareas actuales con las importadas?")
+      ) {
+        tasks = importedTasks;
+        saveTasks();
+        renderTasks();
+        alert("Tareas importadas correctamente ✅");
+      }
+    } catch (error) {
+      alert("Error al leer el archivo. Asegúrate de que sea un JSON válido.");
+      console.error(error);
+    }
+  };
+  reader.readAsText(file);
+});
+// === Exportar tareas y abrir Gmail ===
+const exportBtn2 = document.getElementById("exportBtn");
+
+exportBtn2.addEventListener("click", () => {
+  if (tasks.length === 0) {
+    alert("No hay tareas para exportar.");
+    return;
+  }
+
+  // Generar archivo JSON
+  const dataStr = JSON.stringify(tasks, null, 2);
+  const blob = new Blob([dataStr], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  // Descargar archivo automáticamente
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "tareas.json";
+  a.click();
+  URL.revokeObjectURL(url);
+
+  // Abrir Gmail con mensaje prellenado
+  // 👈 pon aquí tu correo
+  const asunto = encodeURIComponent("Mis tareas exportadas 📋");
+  const cuerpo = encodeURIComponent(
+    `Hola,\n\nTe envío mis tareas exportadas en el archivo "tareas.json".\n\nAdjunta el archivo descargado antes de enviar.\n\nSaludos 👋`
+  );
+
+  // Abrir Gmail sin destinatario
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${asunto}&body=${cuerpo}`;
+  window.open(gmailUrl, "_blank");
+});
+
 // Inicializar
 renderTasks();
