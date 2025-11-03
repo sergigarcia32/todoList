@@ -4,6 +4,7 @@ const list = document.getElementById("taskList");
 const deleteAllBtn = document.getElementById("deleteAllBtn");
 
 const categoryInput = document.getElementById("taskCategory");
+const dayInput = document.getElementById("taskday");
 const objectiveInput = document.getElementById("taskObjective");
 const descriptionInput = document.getElementById("taskDescription");
 const startDateInput = document.getElementById("taskStartDate");
@@ -16,6 +17,7 @@ const closeModal = document.getElementById("closeModal");
 
 const editForm = document.getElementById("editForm");
 const editCategory = document.getElementById("editCategory");
+const editDay = document.getElementById("editDay");
 const editObjective = document.getElementById("editObjective");
 const editDescription = document.getElementById("editDescription");
 const editStartDate = document.getElementById("editStartDate");
@@ -33,24 +35,70 @@ function renderTasks() {
     list.innerHTML = `<li class="text-center text-gray-500 py-4">No hay tareas</li>`;
     return;
   }
+  // Definimos el orden de los días
+  const dayOrder = [
+    "all days",
+    "lunes",
+    "martes",
+    "miércoles",
+    "jueves",
+    "viernes",
+    "sábado",
+    "domingo",
+  ];
 
+  // Ordenamos las tareas según el orden definido
+  tasks.sort((a, b) => {
+    const indexA = dayOrder.indexOf(a.day.toLowerCase());
+    const indexB = dayOrder.indexOf(b.day.toLowerCase());
+    return indexA - indexB;
+  });
+
+  // Luego generamos los <li> como ya hacías
   tasks.forEach((task) => {
     const li = document.createElement("li");
     li.className = "py-3 px-2 flex justify-between items-start";
 
     li.innerHTML = `
+    <div>
       <div>
-        <p class="font-semibold text-gray-800">${task.objective} <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">${task.category}</span></p>
-        <p class="text-gray-600 text-sm">${task.description}</p>
-        <p class="text-gray-500 text-xs mt-1">Inicio: ${task.startDate} ${task.startTime} — Fin: ${task.endDate}</p>
+        <span class="text-sm text-gray-500 bg-gray-200 px-2 py-0.5 rounded">${task.day}</span>
+        <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">${task.category}</span>
       </div>
-      <div class="space-x-2">
-        <button data-id="${task.id}" class="editBtn text-blue-600 hover:underline">Editar</button>
-        <button data-id="${task.id}" class="deleteBtn text-red-600 hover:underline">Eliminar</button>
-      </div>
-    `;
+      <p class="font-semibold text-gray-500 text-xs mt-1">Inicio: ${task.startDate}</p>
+      <p class="font-semibold text-gray-500 text-xs mt-1">${task.startTime} — ${task.endDate}</p>
+      <p class="font-semibold text-gray-800">${task.objective}</p>
+      <p class="text-gray-600 text-sm">${task.description}</p>
+    </div>
+    <div class="space-x-2">
+      <button data-id="${task.id}" class="editBtn text-blue-600 hover:underline">Editar</button>
+      <button data-id="${task.id}" class="deleteBtn text-red-600 hover:underline">Eliminar</button>
+    </div>
+  `;
+
     list.appendChild(li);
   });
+
+  // tasks.forEach((task) => {
+  //   const li = document.createElement("li");
+  //   li.className = "py-3 px-2 flex justify-between items-start";
+
+  //   li.innerHTML = `
+  //     <div>
+  //       <div><span class="text-sm text-gray-500 bg-gray-200 px-2 py-0.5 rounded">${task.day}</span>  <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">${task.category}</span></div>
+  //        <p class="font-semibold text-gray-500 text-xs mt-1">Inicio: ${task.startDate}</p>
+  //       <p class="font-semibold text-gray-500 text-xs mt-1">${task.startTime} — ${task.endDate}</p>
+  //       <p class="font-semibold text-gray-800">${task.objective}</p>
+  //       <p class="text-gray-600 text-sm">${task.description}</p>
+
+  //     </div>
+  //     <div class="space-x-2">
+  //       <button data-id="${task.id}" class="editBtn text-blue-600 hover:underline">Editar</button>
+  //       <button data-id="${task.id}" class="deleteBtn text-red-600 hover:underline">Eliminar</button>
+  //     </div>
+  //   `;
+  //   list.appendChild(li);
+  // });
 }
 
 function saveTasks() {
@@ -64,6 +112,7 @@ form.addEventListener("submit", (e) => {
   const task = {
     id: Date.now(),
     category: categoryInput.value,
+    day: dayInput.value,
     objective: objectiveInput.value.trim(),
     description: descriptionInput.value.trim(),
     startDate: startDateInput.value,
@@ -84,6 +133,7 @@ list.addEventListener("click", (e) => {
   if (e.target.classList.contains("editBtn")) {
     taskToEdit = tasks.find((t) => t.id == id);
     editCategory.value = taskToEdit.category;
+    editDay.value = taskToEdit.day;
     editObjective.value = taskToEdit.objective;
     editDescription.value = taskToEdit.description;
     editStartDate.value = taskToEdit.startDate;
@@ -106,6 +156,7 @@ editForm.addEventListener("submit", (e) => {
   e.preventDefault();
 
   taskToEdit.category = editCategory.value;
+  taskToEdit.day = editDay.value;
   taskToEdit.objective = editObjective.value.trim();
   taskToEdit.description = editDescription.value.trim();
   taskToEdit.startDate = editStartDate.value;
